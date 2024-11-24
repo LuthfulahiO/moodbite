@@ -25,8 +25,8 @@ export default function Home() {
           className="max-w-2xl mx-auto text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 mb-6">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
+            <Sparkles className="w-8 h-8 text-white" />
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-500 to-pink-500">
               MoodBite
             </h1>
           </div>
