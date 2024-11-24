@@ -33,14 +33,6 @@ export default function Home() {
           <p className="text-neutral-400 text-lg mb-8">
             Discover food that matches your mood, powered by AI
           </p>
-          {!hasCompletedOnboarding && (
-            <Button
-              variant="secondary"
-              className="text-sm hover:scale-105 transition-transform"
-            >
-              Skip for now
-            </Button>
-          )}
         </motion.div>
 
         {hasCompletedOnboarding ? <MoodInput /> : <OnboardingSteps />}

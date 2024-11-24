@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Check } from "lucide-react";
+import { Send, Check, BookmarkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useFoodStore } from "@/store/food-store";
+import { toast } from "sonner";
 
 interface Recommendation {
   name: string;
@@ -20,7 +21,8 @@ export function MoodInput() {
   const [isPending, setIsPending] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { userPreferences, addSelectedRecommendation } = useFoodStore();
+  const { userPreferences, addSelectedRecommendation, resetPreferences } =
+    useFoodStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,11 +46,10 @@ export function MoodInput() {
       }
 
       const data = await response.json();
-      console.log(data);
       setRecommendations(data.recommendations);
     } catch (error) {
       console.error("Error getting recommendations:", error);
-      // Handle error appropriately
+      toast.error("Failed to get recommendations. Please try again.");
     } finally {
       setIsPending(false);
     }
@@ -56,7 +57,27 @@ export function MoodInput() {
 
   const handleSelectRecommendation = (recommendation: Recommendation) => {
     setSelectedId(recommendation.name);
-    addSelectedRecommendation(mood, recommendation);
+  };
+
+  const handleSaveRecommendation = () => {
+    if (!selectedId) return;
+
+    const selectedRecommendation = recommendations.find(
+      (rec) => rec.name === selectedId
+    );
+
+    if (selectedRecommendation) {
+      addSelectedRecommendation(mood, selectedRecommendation);
+      toast.success("Recommendation saved!");
+    }
+  };
+
+  const handleResetPreferences = () => {
+    resetPreferences();
+    setMood("");
+    setRecommendations([]);
+    setSelectedId(null);
+    toast.success("Preferences have been reset");
   };
 
   return (
@@ -95,9 +116,22 @@ export function MoodInput() {
           animate={{ opacity: 1 }}
           className="space-y-4"
         >
-          <h2 className="text-xl font-semibold">Recommended for your mood</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Recommended for your mood</h2>
+            {selectedId && (
+              <Button
+                onClick={handleSaveRecommendation}
+                variant="secondary"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <BookmarkIcon className="w-4 h-4" />
+                Save Selection
+              </Button>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Select the recommendation you'd like to try:
+            Select a recommendation and click save to store it:
           </p>
           <div className="grid gap-4">
             {recommendations.map((rec) => (
@@ -139,6 +173,15 @@ export function MoodInput() {
           </div>
         </motion.div>
       )}
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={handleResetPreferences}
+          className="text-destructive hover:text-destructive"
+        >
+          Reset all preferences
+        </Button>
+      </div>
     </motion.div>
   );
 }

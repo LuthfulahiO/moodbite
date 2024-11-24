@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Fish, Egg, Wheat } from "lucide-react";
+import { Leaf, Fish, Egg, Wheat, CircleOff, Beef } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useFoodStore } from "@/store/food-store";
 import { Button } from "@/components/ui/button";
 
 const preferences = [
+  {
+    icon: CircleOff,
+    label: "No preferences",
+    description: "No dietary restrictions",
+  },
+  {
+    icon: Beef,
+    label: "Non-vegetarian",
+    description: "Meat and dairy products",
+  },
   { icon: Leaf, label: "Vegan", description: "Plant-based foods only" },
   { icon: Fish, label: "Pescatarian", description: "Fish and vegetables" },
   { icon: Egg, label: "Vegetarian", description: "No meat products" },

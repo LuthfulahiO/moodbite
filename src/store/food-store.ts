@@ -57,6 +57,10 @@ interface FoodStore {
     mood: string,
     recommendation: Recommendation
   ) => void;
+  setUserPreferences: (
+    preferences: Partial<FoodStore["userPreferences"]>
+  ) => void;
+  resetPreferences: () => void;
 }
 
 export const useFoodStore = create<FoodStore>()(
@@ -130,6 +134,21 @@ export const useFoodStore = create<FoodStore>()(
             },
           ],
         })),
+      setUserPreferences: (preferences) =>
+        set((state) => ({
+          userPreferences: { ...state.userPreferences, ...preferences },
+        })),
+      resetPreferences: () => {
+        set({
+          userPreferences: {
+            dietaryPreferences: [],
+            healthRestrictions: [],
+            moodTracking: [],
+            budgetRange: { min: 0, max: 0 },
+          },
+          selectedRecommendations: [],
+        });
+      },
     }),
     {
       name: "food-store",
