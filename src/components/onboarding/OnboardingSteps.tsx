@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { DietaryPreferences } from "./steps/DietaryPreferences";
 import { MoodTracking } from "./steps/MoodTracking";
-import { BudgetRange } from "./steps/BudgetRange";
 import { HealthRestrictions } from "./steps/HealthRestrictions";
+import { Nationality } from "./steps/Nationality";
 
 const steps = [
   { id: "dietary", component: DietaryPreferences },
-  { id: "budget", component: BudgetRange },
   { id: "health", component: HealthRestrictions },
+  { id: "nationality", component: Nationality },
   { id: "mood", component: MoodTracking },
 ];
 
@@ -18,7 +18,7 @@ export function OnboardingSteps() {
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
       console.log("Onboarding completed!");
     }

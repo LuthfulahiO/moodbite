@@ -13,7 +13,7 @@ export default function Home() {
     userPreferences.dietaryPreferences.length > 0 &&
     userPreferences.healthRestrictions.length > 0 &&
     userPreferences.moodTracking.length > 0 &&
-    userPreferences.budgetRange.max > 0;
+    userPreferences.nationality !== null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background">

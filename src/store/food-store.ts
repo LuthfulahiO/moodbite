@@ -21,6 +21,13 @@ interface Recommendation {
   nutritionalBenefits: string[];
 }
 
+interface Preferences {
+  nationality: string;
+  dietaryPreferences: string[];
+  moodTracking: string[];
+  healthRestrictions: string[];
+}
+
 interface FoodStore {
   savedMeals: {
     id: string;
@@ -33,12 +40,7 @@ interface FoodStore {
       location?: string;
     };
   }[];
-  userPreferences: {
-    dietaryPreferences: string[];
-    healthRestrictions: string[];
-    moodTracking: string[];
-    budgetRange: { min: number; max: number };
-  };
+  userPreferences: Preferences;
   selectedRecommendations: {
     recommendation: Recommendation;
     mood: string;
@@ -52,7 +54,6 @@ interface FoodStore {
   setDietaryPreferences: (preferences: string[]) => void;
   setHealthRestrictions: (restrictions: string[]) => void;
   setMoodTracking: (moods: string[]) => void;
-  setBudgetRange: (budget: { min: number; max: number }) => void;
   addSelectedRecommendation: (
     mood: string,
     recommendation: Recommendation
@@ -68,10 +69,10 @@ export const useFoodStore = create<FoodStore>()(
     (set) => ({
       savedMeals: [],
       userPreferences: {
+        nationality: "",
         dietaryPreferences: [],
-        healthRestrictions: [],
         moodTracking: [],
-        budgetRange: { min: 0, max: 0 },
+        healthRestrictions: [],
       },
       selectedRecommendations: [],
       addSavedMeal: (meal) =>
@@ -119,10 +120,6 @@ export const useFoodStore = create<FoodStore>()(
         set((state) => ({
           userPreferences: { ...state.userPreferences, moodTracking: moods },
         })),
-      setBudgetRange: (budget) =>
-        set((state) => ({
-          userPreferences: { ...state.userPreferences, budgetRange: budget },
-        })),
       addSelectedRecommendation: (mood, recommendation) =>
         set((state) => ({
           selectedRecommendations: [
@@ -141,10 +138,10 @@ export const useFoodStore = create<FoodStore>()(
       resetPreferences: () => {
         set({
           userPreferences: {
+            nationality: "",
             dietaryPreferences: [],
-            healthRestrictions: [],
             moodTracking: [],
-            budgetRange: { min: 0, max: 0 },
+            healthRestrictions: [],
           },
           selectedRecommendations: [],
         });

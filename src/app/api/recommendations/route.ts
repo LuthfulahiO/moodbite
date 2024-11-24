@@ -7,13 +7,10 @@ import { JsonOutputParser } from "@langchain/core/output_parsers";
 const requestSchema = z.object({
   mood: z.string(),
   preferences: z.object({
+    nationality: z.string(),
     dietaryPreferences: z.array(z.string()),
     moodTracking: z.array(z.string()),
     healthRestrictions: z.array(z.string()),
-    budgetRange: z.object({
-      min: z.number(),
-      max: z.number(),
-    }),
   }),
 });
 
@@ -49,11 +46,11 @@ const promptTemplate =
   PromptTemplate.fromTemplate(`You are MoodBite's AI food recommendation expert. Generate exactly 3 food recommendations based on the user's mood and preferences.
 
 User Information:
+Nationality: {nationality}
 Mood: {mood}
 Dietary Preferences: {dietary_preferences}
 Health Restrictions: {health_restrictions}
 Mood Tracking: {mood_tracking}
-Budget Range: Min {budget_min}, Max {budget_max}
 
 You must respond with a JSON object that exactly matches this structure:
 {{
@@ -101,12 +98,11 @@ export async function POST(request: Request) {
 
     // Format the prompt with the correct parameters
     const formattedPrompt = await promptTemplate.format({
+      nationality: preferences.nationality,
       mood: mood,
       dietary_preferences: preferences.dietaryPreferences.join(", "),
       health_restrictions: preferences.healthRestrictions.join(", "),
       mood_tracking: preferences.moodTracking.join(", "),
-      budget_min: preferences.budgetRange.min,
-      budget_max: preferences.budgetRange.max,
       format_instructions: outputParser.getFormatInstructions(),
     });
 
