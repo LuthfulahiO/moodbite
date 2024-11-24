@@ -5,11 +5,13 @@ import { DietaryPreferences } from "./steps/DietaryPreferences";
 import { MoodTracking } from "./steps/MoodTracking";
 import { HealthRestrictions } from "./steps/HealthRestrictions";
 import { Nationality } from "./steps/Nationality";
+import { CuisinePreferences } from "./steps/CuisinePreferences";
 
 const steps = [
   { id: "dietary", component: DietaryPreferences },
   { id: "health", component: HealthRestrictions },
   { id: "nationality", component: Nationality },
+  { id: "cuisine", component: CuisinePreferences },
   { id: "mood", component: MoodTracking },
 ];
 

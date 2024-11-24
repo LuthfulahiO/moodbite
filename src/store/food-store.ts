@@ -26,6 +26,7 @@ interface Preferences {
   dietaryPreferences: string[];
   moodTracking: string[];
   healthRestrictions: string[];
+  cuisinePreference: string;
 }
 
 interface FoodStore {
@@ -73,6 +74,7 @@ export const useFoodStore = create<FoodStore>()(
         dietaryPreferences: [],
         moodTracking: [],
         healthRestrictions: [],
+        cuisinePreference: "",
       },
       selectedRecommendations: [],
       addSavedMeal: (meal) =>
@@ -142,6 +144,7 @@ export const useFoodStore = create<FoodStore>()(
             dietaryPreferences: [],
             moodTracking: [],
             healthRestrictions: [],
+            cuisinePreference: "",
           },
           selectedRecommendations: [],
         });

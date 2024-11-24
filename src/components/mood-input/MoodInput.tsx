@@ -100,7 +100,7 @@ export function MoodInput() {
           className="w-full"
         >
           {isPending ? (
-            "Analyzing your mood..."
+            "Solving for hunger needs..."
           ) : (
             <span className="flex items-center gap-2">
               Get Recommendations

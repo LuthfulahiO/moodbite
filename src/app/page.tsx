@@ -16,7 +16,7 @@ export default function Home() {
     userPreferences.nationality !== null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background max-w-5xl mx-auto">
       <div className="container mx-auto px-4 py-8 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

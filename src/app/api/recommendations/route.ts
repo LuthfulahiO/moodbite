@@ -11,6 +11,7 @@ const requestSchema = z.object({
     dietaryPreferences: z.array(z.string()),
     moodTracking: z.array(z.string()),
     healthRestrictions: z.array(z.string()),
+    cuisinePreference: z.string(),
   }),
 });
 
@@ -51,6 +52,7 @@ Mood: {mood}
 Dietary Preferences: {dietary_preferences}
 Health Restrictions: {health_restrictions}
 Mood Tracking: {mood_tracking}
+Cuisine Preference: {cuisine_preference}
 
 You must respond with a JSON object that exactly matches this structure:
 {{
@@ -103,6 +105,8 @@ export async function POST(request: Request) {
       dietary_preferences: preferences.dietaryPreferences.join(", "),
       health_restrictions: preferences.healthRestrictions.join(", "),
       mood_tracking: preferences.moodTracking.join(", "),
+      cuisine_preference:
+        preferences.cuisinePreference || "No specific preference",
       format_instructions: outputParser.getFormatInstructions(),
     });
 
