@@ -69,14 +69,14 @@ export function MoodInput() {
         <Textarea
           value={mood}
           onChange={(e) => setMood(e.target.value)}
-          placeholder="How are you feeling? (e.g., 'I'm stressed and craving comfort food')"
-          className="min-h-[100px] bg-neutral-900/50 border-neutral-800 
+          placeholder="Example: I am craving something sweet and comforting, maybe something from italy but not too heavy."
+          className="min-h-[100px] bg-secondary/50 border-border 
                    focus:border-primary/50 backdrop-blur-sm"
         />
         <Button
           type="submit"
           disabled={!mood.trim() || isPending}
-          className="w-full bg-primary hover:bg-primary/90 text-white"
+          className="w-full"
         >
           {isPending ? (
             "Analyzing your mood..."
@@ -95,10 +95,8 @@ export function MoodInput() {
           animate={{ opacity: 1 }}
           className="space-y-4"
         >
-          <h2 className="text-xl font-semibold text-white">
-            Recommended for your mood
-          </h2>
-          <p className="text-sm text-neutral-400 mb-4">
+          <h2 className="text-xl font-semibold">Recommended for your mood</h2>
+          <p className="text-sm text-muted-foreground mb-4">
             Select the recommendation you'd like to try:
           </p>
           <div className="grid gap-4">
@@ -111,14 +109,16 @@ export function MoodInput() {
                   ${
                     selectedId === rec.name
                       ? "border-primary bg-primary/10"
-                      : "border-neutral-800 bg-neutral-900/50 hover:border-primary/50"
+                      : "border-border bg-secondary/50 hover:border-primary/50"
                   }`}
                 onClick={() => handleSelectRecommendation(rec)}
               >
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-medium text-white mb-2">{rec.name}</h3>
-                    <p className="text-sm text-neutral-400">{rec.description}</p>
+                    <p className="text-sm text-neutral-400">
+                      {rec.description}
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {rec.dietaryTags.map((tag) => (
                         <span

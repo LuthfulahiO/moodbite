@@ -16,7 +16,7 @@ export default function Home() {
     userPreferences.budgetRange.max > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background">
       <div className="container mx-auto px-4 py-8 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
