@@ -76,7 +76,7 @@ export function Nationality({ onNext }: { onNext: () => void }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold">What's your nationality?</h2>
+          <h2 className="text-2xl font-bold">What&apos;s your nationality?</h2>
           <p className="text-neutral-400">
             This helps us suggest dishes that match your cultural preferences
           </p>

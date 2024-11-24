@@ -24,7 +24,7 @@ export function CuisinePreferences({ onNext }: { onNext: () => void }) {
         <div>
           <h2 className="text-2xl font-bold">Any specific cuisine in mind?</h2>
           <p className="text-neutral-400">
-            Tell us if you're craving something specific (optional)
+            Tell us if you&apos;re craving something specific (optional)
           </p>
         </div>
         <Input
