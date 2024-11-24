@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export interface Meal {
+interface Meal {
   id: string;
   name: string;
   description: string;
@@ -11,7 +11,7 @@ export interface Meal {
   savedAt?: Date;
 }
 
-export interface Recommendation {
+interface Recommendation {
   name: string;
   cuisine: string;
   description: string;
