@@ -1,91 +1,133 @@
 import { NextResponse } from "next/server";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { HumanMessage, SystemMessage } from "langchain/schema";
+import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 
 const requestSchema = z.object({
   mood: z.string(),
   preferences: z.object({
     dietaryPreferences: z.array(z.string()),
     moodTracking: z.array(z.string()),
-    cuisinePreferences: z.array(z.string()),
-  }),
-  context: z.object({
-    timeOfDay: z.string(),
-    weather: z.string().optional(),
-    location: z.string().optional(),
+    healthRestrictions: z.array(z.string()),
+    budgetRange: z.object({
+      min: z.number(),
+      max: z.number(),
+    }),
   }),
 });
 
-const SYSTEM_PROMPT = `You are MoodBite's AI food recommendation expert. Analyze user moods and preferences to suggest personalized food recommendations considering:
-1. Emotional state and intensity
-2. Time of day and context
-3. Dietary restrictions and preferences
-4. Cultural preferences and cuisine familiarity
-5. Nutritional needs based on mood
+// Define the exact output structure we want
+const responseSchema = z.object({
+  analysis: z.object({
+    dominantEmotion: z.string(),
+    intensity: z.number(),
+    context: z.object({
+      timeOfDay: z.string(),
+      weather: z.string().optional(),
+      occasion: z.string().optional(),
+    }),
+    foodAssociations: z.array(z.string()),
+  }),
+  recommendations: z.array(
+    z.object({
+      name: z.string(),
+      cuisine: z.string(),
+      description: z.string(),
+      matchScore: z.number(),
+      moodAlignment: z.string(),
+      dietaryTags: z.array(z.string()),
+      nutritionalBenefits: z.array(z.string()),
+    })
+  ),
+  explanation: z.string(),
+});
 
-Provide recommendations that:
-- Match the emotional state
-- Respect dietary restrictions
-- Consider cultural context
-- Include mood-boosting ingredients
-- Balance comfort with health`;
+const outputParser = new JsonOutputParser<typeof responseSchema.shape>();
+
+const promptTemplate =
+  PromptTemplate.fromTemplate(`You are MoodBite's AI food recommendation expert. Generate exactly 3 food recommendations based on the user's mood and preferences.
+
+User Information:
+Mood: {mood}
+Dietary Preferences: {dietary_preferences}
+Health Restrictions: {health_restrictions}
+Mood Tracking: {mood_tracking}
+Budget Range: Min {budget_min}, Max {budget_max}
+
+You must respond with a JSON object that exactly matches this structure:
+{{
+  "analysis": {{
+    "dominantEmotion": "current primary emotion",
+    "intensity": "number between 1-10",
+    "context": {{
+      "timeOfDay": "morning/afternoon/evening",
+      "weather": "optional weather context",
+      "occasion": "optional special occasion"
+    }},
+    "foodAssociations": ["food types associated with mood"]
+  }},
+  "recommendations": [
+    {{
+      "name": "dish name",
+      "cuisine": "cuisine type",
+      "description": "brief description",
+      "matchScore": "number between 1-10",
+      "moodAlignment": "how it aligns with mood",
+      "dietaryTags": ["relevant dietary tags"],
+      "nutritionalBenefits": ["key nutritional benefits"],
+    }},
+  ],
+  "explanation": "brief explanation of recommendations"
+}}
+
+{format_instructions}
+
+Important:
+- Provide EXACTLY 3 recommendations
+- Ensure all responses are in valid JSON format
+- Do not include any additional text or explanations outside the JSON structure`);
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { mood, preferences, context } = requestSchema.parse(body);
+    const { mood, preferences } = requestSchema.parse(body);
 
     const model = new ChatOpenAI({
       modelName: "gpt-4o-mini",
       temperature: 0.2,
-      apiKey: process.env.OPENAI_API_KEY,
+      openAIApiKey: process.env.OPENAI_API_KEY,
     });
 
-    const response = await model.invoke([
-      new SystemMessage(SYSTEM_PROMPT),
-      new HumanMessage(`
-        Analyze this user's mood and provide food recommendations:
-        
-        Mood: ${mood}
-        Dietary Preferences: ${preferences.dietaryPreferences.join(", ")}
-        Cuisine Preferences: ${preferences.cuisinePreferences.join(", ")}
-        Time of Day: ${context.timeOfDay}
-        Weather: ${context.weather || "Not specified"}
-        Location: ${context.location || "Not specified"}
-        
-        Provide a response in the following JSON format:
-        {
-          "analysis": {
-            "dominantEmotion": string,
-            "intensity": number,
-            "context": {
-              "timeOfDay": string,
-              "weather": string?,
-              "occasion": string?
-            },
-            "foodAssociations": string[]
-          },
-          "recommendations": [
-            {
-              "name": string,
-              "cuisine": string,
-              "description": string,
-              "matchScore": number,
-              "moodAlignment": string,
-              "dietaryTags": string[],
-              "nutritionalBenefits": string[],
-              "imageUrl": string?
-            }
-          ],
-          "explanation": string
-        }
-      `),
-    ]);
+    // Format the prompt with the correct parameters
+    const formattedPrompt = await promptTemplate.format({
+      mood: mood,
+      dietary_preferences: preferences.dietaryPreferences.join(", "),
+      health_restrictions: preferences.healthRestrictions.join(", "),
+      mood_tracking: preferences.moodTracking.join(", "),
+      budget_min: preferences.budgetRange.min,
+      budget_max: preferences.budgetRange.max,
+      format_instructions: outputParser.getFormatInstructions(),
+    });
 
-    const parsedResponse = JSON.parse(response.content);
+    const response = await model.invoke(formattedPrompt);
+    let responseText: string;
 
-    return NextResponse.json(parsedResponse);
+    if (typeof response.content === "string") {
+      responseText = response.content;
+    } else if (Array.isArray(response.content)) {
+      const textContent = response.content.find(
+        (content: any) => "type" in content && content.type === "text"
+      );
+      if (!textContent || !("text" in textContent)) {
+        throw new Error("No text content found in response");
+      }
+      responseText = textContent.text;
+    } else {
+      throw new Error("Unexpected response format");
+    }
+
+    return NextResponse.json(JSON.parse(responseText));
   } catch (error) {
     console.error("Error processing recommendation:", error);
     return NextResponse.json(

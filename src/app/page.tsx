@@ -5,15 +5,15 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OnboardingSteps } from "@/components/onboarding/OnboardingSteps";
 import { MoodInput } from "@/components/mood-input/MoodInput";
-import { usePreferences } from "./store/preference";
+import { useFoodStore } from "@/store/food-store";
 
 export default function Home() {
-  const { preferences } = usePreferences();
-  const hasCompletedOnboarding = Object.values(preferences).some(
-    (pref) => pref.length > 0
-  );
-
-  console.log(preferences);
+  const { userPreferences } = useFoodStore();
+  const hasCompletedOnboarding =
+    userPreferences.dietaryPreferences.length > 0 &&
+    userPreferences.healthRestrictions.length > 0 &&
+    userPreferences.moodTracking.length > 0 &&
+    userPreferences.budgetRange.max > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
@@ -43,7 +43,7 @@ export default function Home() {
           )}
         </motion.div>
 
-        {!hasCompletedOnboarding ? <MoodInput /> : <OnboardingSteps />}
+        {hasCompletedOnboarding ? <MoodInput /> : <OnboardingSteps />}
       </div>
     </div>
   );
